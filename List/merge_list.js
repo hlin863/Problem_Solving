@@ -77,25 +77,30 @@ function printSinglyLinkedList(node, sep, ws) {
 
 function findMergeNode(headA, headB) {
     
-    displayList(headA);
+    let currentA = new SinglyLinkedListNode();
+    currentA = headA.head;
+    let currentB = new SinglyLinkedListNode();
+    currentB = headB.head;
     
-    console.log("\n");
-    
-    displayList(headB);
-
-    let mergedList = new SinglyLinkedList();
-    
-    let commonData = null;
-    
-    // iterate through the headA first
-    while (headA != null){
+    while (currentA != currentB){
         
-        commonData = checkCommonElement(headA.data, headB);
+        if (currentA.next == null){ 
+            // reaching the end of list A.
+            currentA = headB.head;
+        } else {
+            currentA = currentA.next;
+        }
         
-        headA = headA.next;
+        if (currentB.next == null){
+            // reaching the end of list B.
+            currentB = headA.head;
+        } else {
+            currentB = currentB.next;
+        }
+        
     }
     
-    return commonData;
+    return currentB.data;
     
 }
 
