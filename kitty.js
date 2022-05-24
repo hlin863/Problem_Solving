@@ -147,15 +147,13 @@ function distanceFunction(combinations, array){
 
 function dist(u, v, tree){
     
-    console.log("U: " + u + ", V: " + v);
+    // console.log("U: " + u + ", V: " + v);
     
     let uArr = [];
     
     let vArr = [];
     
     hasPath(tree, uArr, u);
-    
-    console.log("U path: " + uArr);
         
     hasPath(tree, vArr, v);
     
@@ -167,28 +165,21 @@ function dist(u, v, tree){
     
     // console.log("V Array: " + validV);
     
-    return validU.length + validV.length;
+    return validU.length - 1 + validV.length - 1;
     
 }
 
 function validateArray(arr, tree){
     
     let validArray = [];
-    let lastElement = arr[0];
     
     for (let i = 0; i < arr.length - 1; i++){
         
-        for (let j = 0; j < arr.length; j++){
-            if (isChildren(tree, arr[i], arr[j])){
-                validArray.push(arr[i]);
-                validArray.push(arr[j]);
-            }
+        if (isChildren(tree, arr[i], arr[i + 1])){
+            validArray.push(arr[i]);
+            validArray.push(arr[i + 1]);
         }
         
-    }
-    
-    if (lastElement != arr[0]){
-        validArray.push(lastElement);
     }
     
     validArray = removeDuplications(validArray);
