@@ -29,11 +29,7 @@ function processData(input) {
     
     let graph = inputs[0];
     
-    // console.log(graph);
-    
     let combinations = inputs[1];
-    
-    // console.log(combinations);
     
     for (let i = 0; i < combinations.length; i++){
         if (combinations[i].length == 0){
@@ -141,10 +137,6 @@ function distanceFunction(combinations, array){
         let tree = new Tree();
         tree = graphToTree(array, array[1], tree);
         
-        // console.log(combinations);
-        
-        // console.log("\n");
-        
         distance += combinations[i][0] * combinations[i][1] * dist(combinations[i][0], combinations[i][1], tree);
     }
     
@@ -155,37 +147,143 @@ function distanceFunction(combinations, array){
 
 function dist(u, v, tree){
     
-    // console.log("u: " + u + " v: " + v);
+    console.log("U: " + u + ", V: " + v);
     
-    if (tree == null){
-        return 0;
-    } else {
-        if (tree.root == null){
-            return 0;
-        } else {
-            if (u != tree.root && v != tree.root){
-                return dist(u, tree.root, tree) + dist(tree.root, v, tree);
-            } else {
-                // check if u is a child node of v or v is a child node of u
-                let u_index = getNode(u, tree.children);
-                let v_index = getNode(v, tree.children);
+    let uArr = [];
+    
+    let vArr = [];
+    
+    hasPath(tree, uArr, u);
+    
+    console.log("U path: " + uArr);
         
-                if (u_index != -1 && v_index != -1){
-                    return dist(u, tree.children[u_index].root, tree) + dist(tree.children[v_index].root, v, tree);
-                } else if (u_index != -1){
-                    return dist(u, tree.children[u_index].root, tree);
-                } else if (v_index != -1){
-                    return dist(tree.children[v_index].root, v, tree);
-                } else {
-                    return 1;
-                }
-            }
-        }
-    }
+    hasPath(tree, vArr, v);
+    
+    let validU = validateArray(uArr, tree);
+    
+    // console.log("U Array: " + validU);
+    
+    let validV = validateArray(vArr, tree);
+    
+    // console.log("V Array: " + validV);
+    
+    return validU.length + validV.length;
     
 }
 
+function validateArray(arr, tree){
+    
+    let validArray = [];
+    let lastElement = arr[0];
+    
+    for (let i = 0; i < arr.length - 1; i++){
+        
+        for (let j = 0; j < arr.length; j++){
+            if (isChildren(tree, arr[i], arr[j])){
+                validArray.push(arr[i]);
+                validArray.push(arr[j]);
+            }
+        }
+        
+    }
+    
+    if (lastElement != arr[0]){
+        validArray.push(lastElement);
+    }
+    
+    validArray = removeDuplications(validArray);
+    
+    return validArray;
+}
 
+function removeDuplications(arr){
+    let noDuplications = [];
+    
+    for (let i = 0; i < arr.length; i++){
+        
+        let duplicate = false;
+        
+        for (let j = 0; j < noDuplications.length; j++){
+            if (noDuplications[j] == arr[i]){
+                duplicate = true;
+            }
+        }
+        
+        if (duplicate == false){
+            noDuplications.push(arr[i]);
+        }
+        
+    }
+    
+    return noDuplications;
+}
+
+function isChildren(tree, parent, children){
+    if (tree == null){
+        return false;
+    } else {
+        if (tree.root == parent){
+            for (let i = 0; i < tree.children.length; i++){
+                if (tree.children[i].root == children){
+                    return true;
+                }
+            }
+            
+            return false;
+        } else {
+            let result = false;
+            
+            for (let i = 0; i < tree.children.length; i++){
+                result = result || isChildren(tree.children[i], parent, children);
+            }
+            
+            return result;
+        }
+        
+    }
+}
+
+function hasPath(tree, arr, x){
+    
+    if (tree == null){
+        return false;
+    }
+    
+    arr.push(tree.root);
+    
+    if (tree.root == x){
+        return true;
+    }
+    
+    let childrenHasPath = [];
+    
+    for (let i = 0; i < tree.children.length; i++){
+        childrenHasPath.push(hasPath(tree.children[i], arr, x));
+    }
+    
+    let hasChildren = false;
+    
+    for (let i = 0; i < childrenHasPath.length; i++){
+        hasChildren = hasChildren || true;
+    }
+    
+    if (hasChildren){
+        return true;
+    }
+    
+    arr.pop();
+    
+    return false;
+    
+}
+
+function displayTreeChildren(tree){
+    let children = [];
+    for (let i = 0; i < tree.children.length; i++){
+        children.push(tree.children[i].root);
+    }
+    console.log(children);
+}
 
 function countNodes(graph, node){
     let count = 0;
